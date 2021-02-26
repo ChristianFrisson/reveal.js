@@ -30,6 +30,10 @@ export default class Overview {
 
 			this.Reveal.getRevealElement().classList.add( 'overview' );
 
+			this.Reveal.getRevealElement().querySelectorAll( 'h1,h2,h3' ).forEach( function( header ) {
+				header.classList.add('overview');
+			})
+
 			// Don't auto-slide while in overview mode
 			this.Reveal.cancelAutoSlide();
 
@@ -118,15 +122,43 @@ export default class Overview {
 	 */
 	update() {
 
-		const vmin = Math.min( window.innerWidth, window.innerHeight );
-		const scale = Math.max( vmin / 5, 150 ) / vmin;
+		// const vmin = Math.min( window.innerWidth, window.innerHeight );
+		// const scale = Math.max( vmin / 5, 150 ) / vmin;
+		// const indices = this.Reveal.getIndices();
+
+		// this.Reveal.transformSlides( {
+		// 	overview: [
+		// 		'scale('+ scale +')',
+		// 		'translateX('+ ( -indices.h * this.overviewSlideWidth ) +'px)',
+		// 		'translateY('+ ( -indices.v * this.overviewSlideHeight ) +'px)'
+		// 	].join( ' ' )
+		// } );
+
+		// var vmin = Math.min( window.innerWidth, window.innerHeight );
+		// var scale = Math.max( vmin / 10, 5 ) / vmin;
+		// var translateX = -indexh;
+		// var translateY = -indexv;
+
 		const indices = this.Reveal.getIndices();
+		var translateX = -indices.h;
+		var translateY = -indices.v;
+
+		const hIndices = this.Reveal.getSlidesAttributes().map(slide => slide["data-index-h"]);
+		var hcount = Math.max.apply(null,hIndices)+1;
+		function elementsFreq(a) { return new Map([...new Set(a)].map(
+			x => [x, a.filter(y => y === x).length]
+		))};
+		var slidesPerSection = elementsFreq(hIndices);
+		var vcount = Math.max.apply(null,Array.from(slidesPerSection.values()));
+		var scale = Math.min( 1/(hcount+1), 1/(vcount+1) ) ;
+		var translateX = -(hcount-1)/2;
+		var translateY = -(vcount-1)/2;
 
 		this.Reveal.transformSlides( {
 			overview: [
 				'scale('+ scale +')',
-				'translateX('+ ( -indices.h * this.overviewSlideWidth ) +'px)',
-				'translateY('+ ( -indices.v * this.overviewSlideHeight ) +'px)'
+				'translateX('+ ( translateX * this.overviewSlideWidth ) +'px)',
+				'translateY('+ ( translateY * this.overviewSlideHeight ) +'px)'
 			].join( ' ' )
 		} );
 
@@ -145,6 +177,10 @@ export default class Overview {
 
 			this.Reveal.getRevealElement().classList.remove( 'overview' );
 
+			this.Reveal.getRevealElement().querySelectorAll( 'h1,h2,h3' ).forEach( function( header ) {
+				header.classList.remove('overview');
+			})
+	
 			// Temporarily add a class so that transitions can do different things
 			// depending on whether they are exiting/entering overview, or just
 			// moving from slide to slide

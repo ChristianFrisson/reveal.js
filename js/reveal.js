@@ -1656,7 +1656,7 @@ export default function( revealElement, options ) {
 				}
 
 				// Show the horizontal slide if it's within the view distance
-				if( distanceX < viewDistance ) {
+				if( distanceX < viewDistance || Reveal.isOverview() ) {
 					slideContent.load( horizontalSlide );
 				}
 				else {
@@ -1672,7 +1672,7 @@ export default function( revealElement, options ) {
 
 						distanceY = x === ( indexh || 0 ) ? Math.abs( ( indexv || 0 ) - y ) : Math.abs( y - oy );
 
-						if( distanceX + distanceY < viewDistance ) {
+						if( distanceX + distanceY < viewDistance || Reveal.isOverview() ) {
 							slideContent.load( verticalSlide );
 						}
 						else {
